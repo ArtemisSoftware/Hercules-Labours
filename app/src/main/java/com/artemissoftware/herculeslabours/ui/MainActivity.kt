@@ -1,7 +1,8 @@
-package com.artemissoftware.herculeslabours
+package com.artemissoftware.herculeslabours.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.artemissoftware.herculeslabours.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
