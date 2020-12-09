@@ -1,7 +1,6 @@
 package com.artemissoftware.herculeslabours.data
 
 import androidx.room.*
-import com.artemissoftware.herculeslabours.ui.tasks.SortOrder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
