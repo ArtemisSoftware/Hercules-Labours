@@ -16,13 +16,14 @@ import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import com.artemissoftware.herculeslabours.data.SortOrder
+import com.artemissoftware.herculeslabours.data.Task
 import com.artemissoftware.herculeslabours.util.onQueryTextChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class TasksFragment : Fragment(R.layout.fragment_tasks) {
+class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.onItemClickListener {
 
     private val viewModel : TasksViewModel by viewModels()
 
@@ -32,7 +33,7 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
 
         val binding = FragmentTasksBinding.bind(view)
 
-        val taskAdapter = TasksAdapter()
+        val taskAdapter = TasksAdapter(this)
 
         binding.apply {
             recyclerViewTasks.apply {
@@ -49,6 +50,19 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
 
         setHasOptionsMenu(true)
     }
+
+
+
+
+    override fun onItemClick(task: Task) {
+        viewModel.onTaskSelected(task)
+    }
+
+    override fun onCheckboxClick(task: Task, isChecked: Boolean) {
+        viewModel.onTaskCheckedChanged(task, isChecked)
+    }
+
+
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -90,6 +104,7 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
 
 }
