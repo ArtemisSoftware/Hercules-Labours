@@ -8,9 +8,11 @@ import com.artemissoftware.herculeslabours.data.PreferencesManager
 import com.artemissoftware.herculeslabours.data.SortOrder
 import com.artemissoftware.herculeslabours.data.Task
 import com.artemissoftware.herculeslabours.data.TaskDao
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class TasksViewModel @ViewModelInject constructor(private val taskDao: TaskDao, private val preferencesManager: PreferencesManager) : ViewModel(){
@@ -27,6 +29,9 @@ class TasksViewModel @ViewModelInject constructor(private val taskDao: TaskDao, 
 //        taskDao.getTasks(it)
 //    }
 
+
+    private val tasksEventChannel = Channel<TasksEvent>()
+    val tasksEvent = tasksEventChannel.receiveAsFlow()
 
     private val taskFlow = combine (searchQuery, preferencesFlow){
         query, filterPreferences ->
@@ -55,6 +60,18 @@ class TasksViewModel @ViewModelInject constructor(private val taskDao: TaskDao, 
         taskDao.update(task.copy(completed = isChecked))
     }
 
+    fun onTaskSwiped(task: Task) = viewModelScope.launch {
+        taskDao.delete(task)
+        tasksEventChannel.send(TasksEvent.ShowUndoDeleteTaskMessage(task))
+    }
 
+    fun onUndoDeleteClick(task: Task) = viewModelScope.launch {
+        taskDao.insert(task)
+    }
+
+
+    sealed class TasksEvent {
+        data class ShowUndoDeleteTaskMessage(val task: Task) : TasksEvent()
+    }
 }
 
