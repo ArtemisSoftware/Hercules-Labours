@@ -14,12 +14,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.artemissoftware.herculeslabours.data.SortOrder
 import com.artemissoftware.herculeslabours.data.Task
 import com.artemissoftware.herculeslabours.util.onQueryTextChanged
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.artemissoftware.herculeslabours.util.exhaustive
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
@@ -57,6 +59,11 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.onItemClic
                 }
             }).attachToRecyclerView(recyclerViewTasks)
 
+
+            fabAddTask.setOnClickListener {
+
+                viewModel.onAddNewTaskClick()
+            }
         }
 
 
@@ -67,13 +74,25 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.onItemClic
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.tasksEvent.collect{ event ->
                 when(event){
+
                     is TasksViewModel.TasksEvent.ShowUndoDeleteTaskMessage ->{
                         Snackbar.make(requireView(), "Task deleted", Snackbar.LENGTH_LONG)
                             .setAction("UNDO") {
                                 viewModel.onUndoDeleteClick(event.task)
                             }.show()
                     }
-                }
+
+                    is TasksViewModel.TasksEvent.NavigateToAddTaskScreen -> {
+                        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(null, "New Task")
+                        findNavController().navigate(action)
+                    }
+
+                    is TasksViewModel.TasksEvent.NavigateToEditTaskScreen -> {
+                        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(event.task, "Edit Task")
+                        findNavController().navigate(action)
+                    }
+
+                }.exhaustive
             }
         }
 
