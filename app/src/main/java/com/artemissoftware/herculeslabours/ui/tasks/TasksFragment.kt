@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.artemissoftware.herculeslabours.data.SortOrder
@@ -61,9 +62,14 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.onItemClic
 
 
             fabAddTask.setOnClickListener {
-
                 viewModel.onAddNewTaskClick()
             }
+        }
+
+
+        setFragmentResultListener("add_edit_request"){ requestKey, bundle ->
+            val result = bundle.getInt(requestKey)
+            viewModel.onAddEditResult(result)
         }
 
 
@@ -91,7 +97,9 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.onItemClic
                         val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(event.task, "Edit Task")
                         findNavController().navigate(action)
                     }
-
+                    is TasksViewModel.TasksEvent.ShowTaskSavedConfirmationMessage ->{
+                        Snackbar.make(requireView(), event.msg, Snackbar.LENGTH_LONG).show()
+                    }
                 }.exhaustive
             }
         }

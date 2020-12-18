@@ -7,6 +7,8 @@ import com.artemissoftware.herculeslabours.data.PreferencesManager
 import com.artemissoftware.herculeslabours.data.SortOrder
 import com.artemissoftware.herculeslabours.data.Task
 import com.artemissoftware.herculeslabours.data.TaskDao
+import com.artemissoftware.herculeslabours.ui.ADD_TASK_RESULT_OK
+import com.artemissoftware.herculeslabours.ui.EDIT_TASK_RESULT_OK
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -74,14 +76,23 @@ class TasksViewModel @ViewModelInject constructor(private val taskDao: TaskDao, 
         taskDao.insert(task)
     }
 
+    fun onAddEditResult(result: Int) {
+        when (result) {
+            ADD_TASK_RESULT_OK -> showTaskSavedConfirmationMessage("Task added")
+            EDIT_TASK_RESULT_OK -> showTaskSavedConfirmationMessage("Task updated")
+        }
+    }
 
+    private fun showTaskSavedConfirmationMessage(text: String) = viewModelScope.launch {
+        tasksEventChannel.send(TasksEvent.ShowTaskSavedConfirmationMessage(text))
+    }
 
 
     sealed class TasksEvent {
-        data class ShowUndoDeleteTaskMessage(val task: Task) : TasksEvent()
-
         object NavigateToAddTaskScreen : TasksEvent()
         data class NavigateToEditTaskScreen(val task: Task) : TasksEvent()
+        data class ShowUndoDeleteTaskMessage(val task: Task) : TasksEvent()
+        data class ShowTaskSavedConfirmationMessage(val msg: String) : TasksEvent()
 
     }
 }

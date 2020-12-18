@@ -22,14 +22,18 @@ abstract class TaskDatabase : RoomDatabase() {
             val dao = database.get().taskDao()
 
             applicationScope.launch {
-                dao.insert(Task("Wash the dishes"))
-                dao.insert(Task("Do the laundry"))
-                dao.insert(Task("Buy groceries", important = true))
-                dao.insert(Task("Prepare food", completed = true))
-                dao.insert(Task("Call mom"))
-                dao.insert(Task("Visit grandma", completed = true))
-                dao.insert(Task("Repair my bike"))
-                dao.insert(Task("Call Elon Musk"))
+                dao.insert(Task("Slay the Nemean lion"))
+                dao.insert(Task("Slay the nine-headed Lernaean Hydra"))
+                dao.insert(Task("Capture the Ceryneian Hind", important = true))
+                dao.insert(Task("Capture the Erymanthian Boar", completed = true))
+                dao.insert(Task("Clean the Augean stables in a single day"))
+                dao.insert(Task("Slay the Stymphalian birds", completed = true))
+                dao.insert(Task("Capture the Cretan Bull"))
+                dao.insert(Task("Steal the Mares of Diomedes"))
+                dao.insert(Task("Obtain the girdle of Hippolyta, queen of the Amazons"))
+                dao.insert(Task("Obtain the cattle of the three-bodied giant Geryon", important = true))
+                dao.insert(Task("Steal three of the golden apples of the Hesperides", completed = true))
+                dao.insert(Task("Capture and bring back Cerberus"))
             }
         }
     }
